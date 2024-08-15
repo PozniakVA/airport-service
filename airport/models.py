@@ -39,3 +39,28 @@ class Airport(models.Model):
 
     def __str__(self) -> str:
         return f"{self.name} ({self.closest_big_city})"
+
+
+class Route(models.Model):
+    source = models.ForeignKey(
+        "Airport",
+        on_delete=models.CASCADE,
+        related_name="routes"
+    )
+    destination = models.ForeignKey(
+        "Airport",
+        on_delete=models.CASCADE,
+        related_name="routes"
+    )
+    distance = models.FloatField()
+
+    def clean(self) -> None:
+        if self.distance <= 0:
+            raise ValidationError("The distance must be greater than 0.")
+
+    def save(self, *args, **kwargs) -> None:
+        self.clean()
+        super().save(*args, **kwargs)
+
+    def __str__(self) -> str:
+        return f"{self.source.name} - {self.destination.name}"
