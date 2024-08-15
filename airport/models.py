@@ -94,3 +94,25 @@ class Crew(models.Model):
 
     def __str__(self) -> str:
         return f"{self.first_name} {self.last_name}"
+
+
+class Ticket(models.Model):
+    row = models.IntegerField()
+    seat = models.IntegerField()
+    flight = models.ForeignKey(
+        "Flight",
+        on_delete=models.CASCADE,
+        related_name="tickets"
+    )
+    order = models.ForeignKey(
+        "Order",
+        on_delete=models.CASCADE,
+        related_name="tickets"
+    )
+
+    def __str__(self) -> str:
+        return f"{self.order} - {self.flight}"
+
+
+class Order(models.Model):
+    ...
