@@ -6,7 +6,11 @@ class Airplane(models.Model):
     name = models.CharField(max_length=100)
     rows = models.IntegerField()
     seats_in_rows = models.IntegerField()
-    airplane_type = models.ForeignKey("AirplaneType", on_delete=models.CASCADE, related_name="airplanes")
+    airplane_type = models.ForeignKey(
+        "AirplaneType",
+        on_delete=models.CASCADE,
+        related_name="airplanes"
+    )
 
     def clean(self) -> None:
         if self.rows <= 0:
@@ -23,4 +27,7 @@ class Airplane(models.Model):
 
 
 class AirplaneType(models.Model):
-    ...
+    name = models.CharField(max_length=100)
+
+    def __str__(self) -> str:
+        return self.name
