@@ -1,6 +1,8 @@
 from django.core.exceptions import ValidationError
 from django.db import models
 
+from airport_service import settings
+
 
 class Airplane(models.Model):
     name = models.CharField(max_length=100)
@@ -115,4 +117,8 @@ class Ticket(models.Model):
 
 
 class Order(models.Model):
-    ...
+    created_at = models.DateTimeField(auto_now_add=True)
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE
+    )
