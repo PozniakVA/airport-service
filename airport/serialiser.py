@@ -12,16 +12,30 @@ from airport.models import (
 )
 
 
+class AirplaneTypeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = AirplaneType
+        fields = ("id", "name",)
+
+
 class AirplaneSerializer(serializers.ModelSerializer):
     class Meta:
         model = Airplane
         fields = ("id", "name", "rows", "seats_in_rows", "airplane_type")
 
 
-class AirplaneTypeSerializer(serializers.ModelSerializer):
+class AirplaneListSerializer(serializers.ModelSerializer):
+    airplane_type = serializers.SlugRelatedField(
+        read_only=True, slug_field="name"
+    )
+
     class Meta:
-        model = AirplaneType
-        fields = ("id", "name",)
+        model = Airplane
+        fields = ("id", "name", "airplane_type")
+
+
+class AirplaneDetailSerializer(AirplaneSerializer):
+    airplane_type = AirplaneTypeSerializer(read_only=True)
 
 
 class AirportSerializer(serializers.ModelSerializer):
