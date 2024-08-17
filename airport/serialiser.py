@@ -1,36 +1,46 @@
 from rest_framework import serializers
 
-from airport.models import Airplane, AirplaneType, Airport, Route, Flight, Crew, Ticket, Order
+from airport.models import (
+    Airplane,
+    AirplaneType,
+    Airport,
+    Route,
+    Flight,
+    Crew,
+    Ticket,
+    Order
+)
 
 
 class AirplaneSerializer(serializers.ModelSerializer):
     class Meta:
         model = Airplane
-        fields = ("name", "rows", "seats_in_rows", "airplane_type")
+        fields = ("id", "name", "rows", "seats_in_rows", "airplane_type")
 
 
 class AirplaneTypeSerializer(serializers.ModelSerializer):
     class Meta:
         model = AirplaneType
-        fields = ("name",)
+        fields = ("id", "name",)
 
 
 class AirportSerializer(serializers.ModelSerializer):
     class Meta:
         model = Airport
-        fields = ("name", "closest_big_city",)
+        fields = ("id", "name", "closest_big_city",)
 
 
 class RouteSerializer(serializers.ModelSerializer):
     class Meta:
         model = Route
-        fields = ("source", "destination", "distance",)
+        fields = ("id", "source", "destination", "distance",)
 
 
 class FlightSerializer(serializers.ModelSerializer):
     class Meta:
         model = Flight
         fields = (
+            "id",
             "route",
             "airplane",
             "departure_time",
@@ -42,16 +52,16 @@ class FlightSerializer(serializers.ModelSerializer):
 class CrewSerializer(serializers.ModelSerializer):
     class Meta:
         model = Crew
-        fields = ("first_name", "last_name",)
+        fields = ("id", "first_name", "last_name",)
 
 
 class TicketSerializer(serializers.ModelSerializer):
     class Meta:
         model = Ticket
-        fields = ("seat", "flight", "order",)
+        fields = ("id", "seat", "flight", "order",)
 
 
 class OrderSerializer(serializers.ModelSerializer):
     class Meta:
         model = Order
-        fields = ("created_at", "user",)
+        fields = ("id", "created_at", "user",)
