@@ -56,6 +56,10 @@ class Route(models.Model):
     )
     distance = models.FloatField()
 
+    @property
+    def route_name(self) -> str:
+        return f"{self.source.name} - {self.destination.name}"
+
     def clean(self) -> None:
         if self.distance <= 0:
             raise ValidationError("The distance must be greater than 0.")
