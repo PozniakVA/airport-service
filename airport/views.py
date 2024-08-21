@@ -1,5 +1,4 @@
 from rest_framework import viewsets
-from rest_framework.permissions import IsAuthenticated
 
 from airport.models import (
     Airplane,
@@ -27,6 +26,10 @@ from airport.serialiser import (
 )
 
 
+def get_parameters_from_ints(query_params):
+    return [int(str_id) for str_id in query_params.split(",")]
+
+
 class AirplaneViewSet(viewsets.ModelViewSet):
     queryset = Airplane.objects.all()
     serializer_class = AirplaneSerializer
@@ -37,6 +40,20 @@ class AirplaneViewSet(viewsets.ModelViewSet):
         if self.action == "retrieve":
             return AirplaneDetailSerializer
         return AirplaneSerializer
+
+    def get_queryset(self):
+        queryset = self.queryset
+        name = self.request.query_params.get("name")
+        airplane_type = self.request.query_params.get("airplane_type")
+
+        if name:
+            queryset = queryset.filter(name__icontains=name)
+
+        if airplane_type:
+            airplane_type_ids = get_parameters_from_ints(airplane_type)
+            queryset = queryset.filter(airplane_type__id__in=airplane_type_ids)
+
+        return queryset.distinct()
 
 
 class AirplaneTypeViewSet(viewsets.ModelViewSet):
