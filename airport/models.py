@@ -116,6 +116,26 @@ class Ticket(models.Model):
         related_name="tickets"
     )
 
+    @staticmethod
+    def validate_ticket(row, seat, flight) -> None:
+        names = ["rows", "seats_in_rows"]
+        for index, value in enumerate([row, seat]):
+            max_value = getattr(flight.airplane, names[index])
+            if value < 1 or value > max_value:
+                raise ValidationError(
+                    f"The seat {value} must be between 1 and {max_value}"
+                )
+
+    def clean(self) -> None:
+        self.validate_ticket(self.row, self.seat, self.flight)
+
+    def save(self, *args, **kwargs) -> None:
+        self.full_clean()
+        super().save(*args, **kwargs)
+
+    class Meta:
+        unique_together = ("row", "seat")
+
     def __str__(self) -> str:
         return f"{self.order} - {self.flight}"
 

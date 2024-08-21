@@ -122,6 +122,16 @@ class TicketSerializer(serializers.ModelSerializer):
     class Meta:
         model = Ticket
         fields = ("id", "row", "seat", "flight",)
+        unique_together = ("row", "seat")
+
+    def validate(self, attrs) -> None:
+        data = super(TicketSerializer, self).validate(attrs=attrs)
+        Ticket.validate_ticket(
+            attrs["row"],
+            attrs["seat"],
+            attrs["flight"],
+        )
+        return data
 
 
 class OrderSerializer(serializers.ModelSerializer):
