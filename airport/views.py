@@ -112,6 +112,15 @@ class RouteViewSet(viewsets.ModelViewSet):
             return RouteDetailSerializer
         return RouteSerializer
 
+    def get_queryset(self):
+        queryset = self.queryset
+        destination = self.request.query_params.get("destination")
+
+        if destination:
+            queryset = queryset.filter(destination__name__icontains=destination)
+
+        return queryset.distinct()
+
 
 class OrderViewSet(viewsets.ModelViewSet):
     queryset = Order.objects.all()
