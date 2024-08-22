@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from rest_framework import viewsets
 
 from airport.models import (
@@ -128,7 +130,15 @@ class OrderViewSet(viewsets.ModelViewSet):
     queryset = Order.objects.all()
 
     def get_queryset(self):
-        return self.queryset.filter(user=self.request.user)
+        queryset = self.queryset.filter(user=self.request.user)
+        created_at = self.request.query_params.get("created_at")
+        route = self.request.query_params.get("route")
+
+        if created_at:
+            date = datetime.strptime(created_at, "%Y-%m-%d").date()
+            queryset = queryset.filter(created_at__date=date)
+
+        return queryset.distinct()
 
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
