@@ -134,6 +134,14 @@ class TicketSerializer(serializers.ModelSerializer):
         return data
 
 
+class TicketListSerializer(TicketSerializer):
+    flight = FlightListSerializer(read_only=True)
+
+
+class TicketDetailSerializer(TicketSerializer):
+    flight = FlightDetailSerializer(read_only=True)
+
+
 class OrderSerializer(serializers.ModelSerializer):
     tickets = TicketSerializer(
         many=True,
