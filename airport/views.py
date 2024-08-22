@@ -22,7 +22,8 @@ from airport.serialiser import (
     OrderSerializer,
     FlightSerializer,
     FlightListSerializer,
-    FlightDetailSerializer, TicketSerializer,
+    FlightDetailSerializer,
+    TicketSerializer,
 )
 
 
@@ -59,6 +60,15 @@ class AirplaneViewSet(viewsets.ModelViewSet):
 class AirplaneTypeViewSet(viewsets.ModelViewSet):
     queryset = AirplaneType.objects.all()
     serializer_class = AirplaneTypeSerializer
+
+    def get_queryset(self):
+        queryset = self.queryset
+        name = self.request.query_params.get("name")
+
+        if name:
+            queryset = queryset.filter(name__icontains=name)
+
+        return queryset.distinct()
 
 
 class CrewViewSet(viewsets.ModelViewSet):
