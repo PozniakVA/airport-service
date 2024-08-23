@@ -1,5 +1,7 @@
 from datetime import datetime
 
+from django.db.models import F, Value
+from django.db.models.functions import Concat
 from rest_framework import viewsets
 
 from airport.models import (
@@ -132,10 +134,20 @@ class OrderViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         queryset = self.queryset.filter(user=self.request.user)
         created_at = self.request.query_params.get("created_at")
+        route = self.request.query_params.get("route")
 
         if created_at:
             date = datetime.strptime(created_at, "%Y-%m-%d").date()
             queryset = queryset.filter(created_at__date=date)
+        if route:
+            queryset = queryset.annotate(
+                route_name=Concat(
+                    F("tickets__flight__route__source__name"),
+                    Value(" - "),
+                    F("tickets__flight__route__destination__name")
+                )
+            ).filter(route_name__icontains=route)
+
         return queryset.distinct()
 
     def perform_create(self, serializer):
