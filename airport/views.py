@@ -171,6 +171,21 @@ class FlightViewSet(viewsets.ModelViewSet):
             return FlightDetailSerializer
         return FlightSerializer
 
+    def get_queryset(self):
+        queryset = self.queryset
+        route = self.request.query_params.get("route")
+
+        if route:
+            queryset = queryset.annotate(
+                route_name=Concat(
+                    F("route__source__name"),
+                    Value(" - "),
+                    F("route__destination__name"),
+                )
+            ).filter(route_name__icontains=route)
+
+        return queryset.distinct()
+
 
 class TicketViewSet(viewsets.ModelViewSet):
     queryset = Ticket.objects.all()
