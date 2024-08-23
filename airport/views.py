@@ -196,3 +196,18 @@ class TicketViewSet(viewsets.ModelViewSet):
         if self.action == "retrieve":
             return TicketDetailSerializer
         return TicketSerializer
+
+    def get_queryset(self):
+        queryset = self.queryset
+        route = self.request.query_params.get("route")
+
+        if route:
+            queryset = queryset.annotate(
+                route_name=Concat(
+                    F("flight__route__source__name"),
+                    Value(" - "),
+                    F("flight__route__destination__name"),
+                )
+            ).filter(route_name__icontains=route)
+
+        return queryset.distinct()
