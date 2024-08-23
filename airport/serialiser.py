@@ -168,3 +168,11 @@ class OrderListSerializer(OrderSerializer):
         read_only=False,
         allow_null=False,
     )
+
+
+class OrderDetailSerializer(OrderSerializer):
+    tickets = TicketDetailSerializer(
+        many=True,
+        read_only=False,
+        allow_null=False,
+    )

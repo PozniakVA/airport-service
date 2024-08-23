@@ -27,7 +27,7 @@ from airport.serialiser import (
     FlightDetailSerializer,
     TicketSerializer,
     TicketListSerializer,
-    TicketDetailSerializer, OrderListSerializer,
+    TicketDetailSerializer, OrderListSerializer, OrderDetailSerializer,
 )
 
 
@@ -132,12 +132,10 @@ class OrderViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         queryset = self.queryset.filter(user=self.request.user)
         created_at = self.request.query_params.get("created_at")
-        route = self.request.query_params.get("route")
 
         if created_at:
             date = datetime.strptime(created_at, "%Y-%m-%d").date()
             queryset = queryset.filter(created_at__date=date)
-
         return queryset.distinct()
 
     def perform_create(self, serializer):
@@ -146,6 +144,8 @@ class OrderViewSet(viewsets.ModelViewSet):
     def get_serializer_class(self):
         if self.action == "list":
             return OrderListSerializer
+        if self.action == "retrieve":
+            return OrderDetailSerializer
         return OrderSerializer
 
 
