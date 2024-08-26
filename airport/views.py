@@ -11,7 +11,8 @@ from airport.models import (
     Airport,
     Route,
     Order,
-    Flight, Ticket
+    Flight,
+    Ticket
 )
 from airport.serialiser import (
     AirplaneSerializer,
@@ -40,7 +41,7 @@ def get_parameters_from_ints(query_params):
 
 
 class AirplaneViewSet(viewsets.ModelViewSet):
-    queryset = Airplane.objects.all()
+    queryset = Airplane.objects.select_related("airplane_type")
     serializer_class = AirplaneSerializer
 
     def get_serializer_class(self):
@@ -111,7 +112,7 @@ class AirportViewSet(viewsets.ModelViewSet):
 
 
 class RouteViewSet(viewsets.ModelViewSet):
-    queryset = Route.objects.all()
+    queryset = Route.objects.select_related("source", "destination")
 
     def get_serializer_class(self):
         if self.action == "list":
@@ -131,7 +132,14 @@ class RouteViewSet(viewsets.ModelViewSet):
 
 
 class OrderViewSet(viewsets.ModelViewSet):
-    queryset = Order.objects.all()
+    queryset = Order.objects.select_related(
+        "user",
+    ).prefetch_related(
+        "tickets__flight__route__source",
+        "tickets__flight__route__destination",
+        "tickets__flight__airplane",
+    )
+
 
     def get_queryset(self):
         queryset = self.queryset.filter(user=self.request.user)
@@ -164,7 +172,7 @@ class OrderViewSet(viewsets.ModelViewSet):
 
 
 class FlightViewSet(viewsets.ModelViewSet):
-    queryset = Flight.objects.all()
+    queryset = Flight.objects.select_related().prefetch_related("crew")
 
     def get_serializer_class(self):
         if self.action == "list":
@@ -190,7 +198,7 @@ class FlightViewSet(viewsets.ModelViewSet):
 
 
 class TicketViewSet(viewsets.ModelViewSet):
-    queryset = Ticket.objects.all()
+    queryset = Ticket.objects.select_related()
 
     def get_serializer_class(self):
         if self.action == "list":
