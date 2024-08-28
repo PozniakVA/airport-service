@@ -34,7 +34,9 @@ from airport.serialiser import (
     TicketListSerializer,
     TicketDetailSerializer,
     OrderListSerializer,
-    OrderDetailSerializer, AirplaneImageSerializer, AirportImageSerializer,
+    OrderDetailSerializer,
+    AirplaneImageSerializer,
+    AirportImageSerializer,
 )
 
 
@@ -170,7 +172,6 @@ class OrderViewSet(viewsets.ModelViewSet):
         "tickets__flight__route__destination",
         "tickets__flight__airplane",
     )
-
 
     def get_queryset(self):
         queryset = self.queryset.filter(user=self.request.user)

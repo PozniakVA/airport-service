@@ -91,7 +91,29 @@ class CrewSerializer(serializers.ModelSerializer):
         fields = ("id", "first_name", "last_name",)
 
 
+class TicketSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Ticket
+        fields = ("id", "row", "seat", "flight",)
+        unique_together = ("row", "seat")
+
+    def validate(self, attrs) -> None:
+        data = super(TicketSerializer, self).validate(attrs=attrs)
+        Ticket.validate_ticket(
+            attrs["row"],
+            attrs["seat"],
+            attrs["flight"],
+        )
+        return data
+
+
 class FlightSerializer(serializers.ModelSerializer):
+    taken_seat = serializers.SlugRelatedField(
+        many=True,
+        read_only=True,
+        slug_field="seat",
+        source="tickets",
+    )
     class Meta:
         model = Flight
         fields = (
@@ -101,6 +123,7 @@ class FlightSerializer(serializers.ModelSerializer):
             "departure_time",
             "arrival_time",
             "crew",
+            "taken_seat"
         )
 
 
@@ -121,6 +144,7 @@ class FlightListSerializer(FlightSerializer):
             "airplane",
             "departure_time",
             "arrival_time",
+            "taken_seat",
         )
 
 
@@ -128,22 +152,6 @@ class FlightDetailSerializer(FlightSerializer):
     route = RouteDetailSerializer(read_only=True)
     airplane = AirplaneDetailSerializer(read_only=True)
     crew = CrewSerializer(read_only=True, many=True)
-
-
-class TicketSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Ticket
-        fields = ("id", "row", "seat", "flight",)
-        unique_together = ("row", "seat")
-
-    def validate(self, attrs) -> None:
-        data = super(TicketSerializer, self).validate(attrs=attrs)
-        Ticket.validate_ticket(
-            attrs["row"],
-            attrs["seat"],
-            attrs["flight"],
-        )
-        return data
 
 
 class TicketListSerializer(TicketSerializer):
