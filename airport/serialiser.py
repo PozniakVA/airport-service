@@ -108,7 +108,8 @@ class TicketSerializer(serializers.ModelSerializer):
 
 
 class FlightSerializer(serializers.ModelSerializer):
-    taken_seat = serializers.SlugRelatedField(
+    free_seats = serializers.IntegerField(read_only=True)
+    taken_seats = serializers.SlugRelatedField(
         many=True,
         read_only=True,
         slug_field="seat",
@@ -123,7 +124,8 @@ class FlightSerializer(serializers.ModelSerializer):
             "departure_time",
             "arrival_time",
             "crew",
-            "taken_seat"
+            "free_seats",
+            "taken_seats",
         )
 
 
@@ -144,7 +146,8 @@ class FlightListSerializer(FlightSerializer):
             "airplane",
             "departure_time",
             "arrival_time",
-            "taken_seat",
+            "free_seats",
+            "taken_seats",
         )
 
 

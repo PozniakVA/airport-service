@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from django.db.models import F, Value
+from django.db.models import F, Value, Count
 from django.db.models.functions import Concat
 from rest_framework import viewsets, status
 from rest_framework.decorators import action
@@ -69,7 +69,7 @@ class AirplaneViewSet(viewsets.ModelViewSet):
             airplane_type_ids = get_parameters_from_ints(airplane_type)
             queryset = queryset.filter(airplane_type__id__in=airplane_type_ids)
 
-        return queryset.distinct()
+        return queryset.distinct().order_by("id")
 
     @action(
         methods=["POST"],
@@ -95,7 +95,7 @@ class AirplaneTypeViewSet(viewsets.ModelViewSet):
         if name:
             queryset = queryset.filter(name__icontains=name)
 
-        return queryset.distinct()
+        return queryset.distinct().order_by("id")
 
 
 class CrewViewSet(viewsets.ModelViewSet):
@@ -112,7 +112,7 @@ class CrewViewSet(viewsets.ModelViewSet):
         if last_name:
             queryset = queryset.filter(last_name__icontains=last_name)
 
-        return queryset.distinct()
+        return queryset.distinct().order_by("id")
 
 
 class AirportViewSet(viewsets.ModelViewSet):
@@ -129,7 +129,7 @@ class AirportViewSet(viewsets.ModelViewSet):
         if name:
             queryset = queryset.filter(name__icontains=name)
 
-        return queryset.distinct()
+        return queryset.distinct().order_by("id")
 
     @action(
         methods=["POST"],
@@ -161,7 +161,7 @@ class RouteViewSet(viewsets.ModelViewSet):
         if destination:
             queryset = queryset.filter(destination__name__icontains=destination)
 
-        return queryset.distinct()
+        return queryset.distinct().order_by("id")
 
 
 class OrderViewSet(viewsets.ModelViewSet):
@@ -190,7 +190,7 @@ class OrderViewSet(viewsets.ModelViewSet):
                 )
             ).filter(route_name__icontains=route)
 
-        return queryset.distinct()
+        return queryset.distinct().order_by("created_at")
 
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
@@ -204,7 +204,16 @@ class OrderViewSet(viewsets.ModelViewSet):
 
 
 class FlightViewSet(viewsets.ModelViewSet):
-    queryset = Flight.objects.select_related().prefetch_related("crew")
+    queryset = (
+        Flight.objects.all()
+        .select_related()
+        .prefetch_related("crew")
+        .annotate(
+            free_seats=(
+                    F("airplane__rows")
+                    * F("airplane__seats_in_rows")
+                    - Count("tickets")
+        )))
 
     def get_serializer_class(self):
         if self.action == "list":
@@ -226,11 +235,11 @@ class FlightViewSet(viewsets.ModelViewSet):
                 )
             ).filter(route_name__icontains=route)
 
-        return queryset.distinct()
+        return queryset.distinct().order_by("free_seats")
 
 
 class TicketViewSet(viewsets.ModelViewSet):
-    queryset = Ticket.objects.select_related()
+    queryset = Ticket.objects.all().select_related()
 
     def get_serializer_class(self):
         if self.action == "list":
@@ -252,4 +261,4 @@ class TicketViewSet(viewsets.ModelViewSet):
                 )
             ).filter(route_name__icontains=route)
 
-        return queryset.distinct()
+        return queryset.distinct().order_by("id")
