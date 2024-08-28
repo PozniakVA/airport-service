@@ -4,6 +4,7 @@ from django.db.models import F, Value, Count
 from django.db.models.functions import Concat
 from rest_framework import viewsets, status
 from rest_framework.decorators import action
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
 from airport.models import (
@@ -172,6 +173,7 @@ class OrderViewSet(viewsets.ModelViewSet):
         "tickets__flight__route__destination",
         "tickets__flight__airplane",
     )
+    permission_classes = (IsAuthenticated,)
 
     def get_queryset(self):
         queryset = self.queryset.filter(user=self.request.user)
