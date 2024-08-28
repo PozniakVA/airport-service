@@ -1,8 +1,22 @@
+import pathlib
+import uuid
+
 from django.core.exceptions import ValidationError
 from django.db import models
+from django.utils.text import slugify
 
 from airport_service import settings
 
+def image_path(instance, filename):
+    filename = f"{slugify(instance.name)}-{uuid.uuid4()}" + pathlib.Path(filename).suffix
+
+    path_at_media = "upload/"
+    if isinstance(instance, Airplane):
+        path_at_media = "upload/airplanes/"
+    elif isinstance(instance, Airport):
+        path_at_media = "upload/airports/"
+
+    return pathlib.Path(path_at_media) / pathlib.Path(filename)
 
 class Airplane(models.Model):
     name = models.CharField(max_length=100)
@@ -13,6 +27,7 @@ class Airplane(models.Model):
         on_delete=models.CASCADE,
         related_name="airplanes"
     )
+    image = models.ImageField(null=True, upload_to=image_path)
 
     def clean(self) -> None:
         if self.rows <= 0:
@@ -38,6 +53,7 @@ class AirplaneType(models.Model):
 class Airport(models.Model):
     name = models.CharField(max_length=100)
     closest_big_city = models.CharField(max_length=100)
+    image = models.ImageField(null=True, upload_to=image_path)
 
     def __str__(self) -> str:
         return f"{self.name} ({self.closest_big_city})"

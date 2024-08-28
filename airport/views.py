@@ -2,7 +2,9 @@ from datetime import datetime
 
 from django.db.models import F, Value
 from django.db.models.functions import Concat
-from rest_framework import viewsets
+from rest_framework import viewsets, status
+from rest_framework.decorators import action
+from rest_framework.response import Response
 
 from airport.models import (
     Airplane,
@@ -32,7 +34,7 @@ from airport.serialiser import (
     TicketListSerializer,
     TicketDetailSerializer,
     OrderListSerializer,
-    OrderDetailSerializer,
+    OrderDetailSerializer, AirplaneImageSerializer, AirportImageSerializer,
 )
 
 
@@ -49,6 +51,8 @@ class AirplaneViewSet(viewsets.ModelViewSet):
             return AirplaneListSerializer
         if self.action == "retrieve":
             return AirplaneDetailSerializer
+        if self.action == "upload_image":
+            return AirplaneImageSerializer
         return AirplaneSerializer
 
     def get_queryset(self):
@@ -64,6 +68,18 @@ class AirplaneViewSet(viewsets.ModelViewSet):
             queryset = queryset.filter(airplane_type__id__in=airplane_type_ids)
 
         return queryset.distinct()
+
+    @action(
+        methods=["POST"],
+        detail=True,
+    )
+    def upload_image(self, request, pk=None):
+        airplane = self.get_object()
+        serializer = self.get_serializer(airplane, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 class AirplaneTypeViewSet(viewsets.ModelViewSet):
@@ -99,8 +115,11 @@ class CrewViewSet(viewsets.ModelViewSet):
 
 class AirportViewSet(viewsets.ModelViewSet):
     queryset = Airport.objects.all()
-    serializer_class = AirportSerializer
 
+    def get_serializer_class(self):
+        if self.action == "upload_image":
+            return AirportImageSerializer
+        return AirportSerializer
     def get_queryset(self):
         queryset = self.queryset
         name = self.request.query_params.get("name")
@@ -109,6 +128,18 @@ class AirportViewSet(viewsets.ModelViewSet):
             queryset = queryset.filter(name__icontains=name)
 
         return queryset.distinct()
+
+    @action(
+        methods=["POST"],
+        detail=True,
+    )
+    def upload_image(self, request, pk=None):
+        airport = self.get_object()
+        serializer = self.get_serializer(airport, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 class RouteViewSet(viewsets.ModelViewSet):
