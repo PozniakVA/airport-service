@@ -108,12 +108,13 @@ class TicketSerializer(serializers.ModelSerializer):
 
 
 class FlightSerializer(serializers.ModelSerializer):
-    free_seats = serializers.IntegerField(read_only=True)
-    taken_seats = serializers.SlugRelatedField(
-        many=True,
+    route = serializers.SlugRelatedField(
         read_only=True,
-        slug_field="seat",
-        source="tickets",
+        slug_field="route_name",
+    )
+    airplane = serializers.SlugRelatedField(
+        read_only=True,
+        slug_field="name",
     )
     class Meta:
         model = Flight
@@ -123,23 +124,20 @@ class FlightSerializer(serializers.ModelSerializer):
             "airplane",
             "departure_time",
             "arrival_time",
-            "crew",
-            "free_seats",
-            "taken_seats",
         )
 
 
 class FlightListSerializer(FlightSerializer):
-    route = serializers.SlugRelatedField(
+    free_seats = serializers.IntegerField(read_only=True)
+    taken_seats = serializers.SlugRelatedField(
+        many=True,
         read_only=True,
-        slug_field="route_name",
-    )
-    airplane = serializers.SlugRelatedField(
-        read_only=True,
-        slug_field="name",
+        slug_field="seat",
+        source="tickets",
     )
 
-    class Meta(FlightSerializer.Meta):
+    class Meta:
+        model = Flight
         fields = (
             "id",
             "route",
@@ -148,17 +146,18 @@ class FlightListSerializer(FlightSerializer):
             "arrival_time",
             "free_seats",
             "taken_seats",
+            "crew",
         )
 
 
-class FlightDetailSerializer(FlightSerializer):
+class FlightDetailSerializer(FlightListSerializer):
     route = RouteDetailSerializer(read_only=True)
     airplane = AirplaneDetailSerializer(read_only=True)
     crew = CrewSerializer(read_only=True, many=True)
 
 
 class TicketListSerializer(TicketSerializer):
-    flight = FlightListSerializer(read_only=True)
+    flight = FlightSerializer(read_only=True)
 
 
 class TicketDetailSerializer(TicketSerializer):

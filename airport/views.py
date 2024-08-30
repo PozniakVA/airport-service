@@ -4,6 +4,7 @@ from django.db.models import F, Value, Count
 from django.db.models.functions import Concat
 from rest_framework import viewsets, status
 from rest_framework.decorators import action
+from rest_framework.pagination import PageNumberPagination
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
@@ -43,6 +44,11 @@ from airport.serialiser import (
 
 def get_parameters_from_ints(query_params):
     return [int(str_id) for str_id in query_params.split(",")]
+
+
+class Pagination(PageNumberPagination):
+    page_size = 5
+    max_page_size = 1000
 
 
 class AirplaneViewSet(viewsets.ModelViewSet):
@@ -174,6 +180,7 @@ class OrderViewSet(viewsets.ModelViewSet):
         "tickets__flight__airplane",
     )
     permission_classes = (IsAuthenticated,)
+    pagination_class = Pagination
 
     def get_queryset(self):
         queryset = self.queryset.filter(user=self.request.user)
