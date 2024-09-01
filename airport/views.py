@@ -55,7 +55,6 @@ class Pagination(PageNumberPagination):
 
 class AirplaneViewSet(viewsets.ModelViewSet):
     queryset = Airplane.objects.select_related("airplane_type")
-    serializer_class = AirplaneSerializer
 
     def get_serializer_class(self):
         if self.action == "list":
@@ -212,6 +211,7 @@ class AirportViewSet(viewsets.ModelViewSet):
     def list(self, request, *args, **kwargs):
         """Get list of all airports"""
         return super().list(request, *args, **kwargs)
+
 
 class RouteViewSet(viewsets.ModelViewSet):
     queryset = Route.objects.select_related("source", "destination")
