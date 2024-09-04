@@ -4,11 +4,12 @@ from django.db.models import F, Value, Count
 from django.db.models.functions import Concat
 from drf_spectacular.types import OpenApiTypes
 from drf_spectacular.utils import extend_schema, OpenApiParameter
-from rest_framework import viewsets, status
+from rest_framework import viewsets, status, mixins
 from rest_framework.decorators import action
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
+from rest_framework.viewsets import GenericViewSet
 
 from airport.models import (
     Airplane,
@@ -213,7 +214,13 @@ class AirportViewSet(viewsets.ModelViewSet):
         return super().list(request, *args, **kwargs)
 
 
-class RouteViewSet(viewsets.ModelViewSet):
+class RouteViewSet(
+    mixins.CreateModelMixin,
+    mixins.RetrieveModelMixin,
+    mixins.UpdateModelMixin,
+    mixins.ListModelMixin,
+    GenericViewSet
+):
     queryset = Route.objects.select_related("source", "destination")
 
     def get_serializer_class(self):
@@ -246,7 +253,13 @@ class RouteViewSet(viewsets.ModelViewSet):
         return super().list(request, *args, **kwargs)
 
 
-class OrderViewSet(viewsets.ModelViewSet):
+class OrderViewSet(
+    mixins.CreateModelMixin,
+    mixins.RetrieveModelMixin,
+    mixins.UpdateModelMixin,
+    mixins.ListModelMixin,
+    GenericViewSet
+):
     queryset = Order.objects.select_related(
         "user",
     ).prefetch_related(
@@ -305,7 +318,13 @@ class OrderViewSet(viewsets.ModelViewSet):
         return super().list(request, *args, **kwargs)
 
 
-class FlightViewSet(viewsets.ModelViewSet):
+class FlightViewSet(
+    mixins.CreateModelMixin,
+    mixins.RetrieveModelMixin,
+    mixins.UpdateModelMixin,
+    mixins.ListModelMixin,
+    GenericViewSet
+):
     queryset = (
         Flight.objects.all()
         .select_related()
@@ -353,7 +372,13 @@ class FlightViewSet(viewsets.ModelViewSet):
         return super().list(request, *args, **kwargs)
 
 
-class TicketViewSet(viewsets.ModelViewSet):
+class TicketViewSet(
+    mixins.CreateModelMixin,
+    mixins.RetrieveModelMixin,
+    mixins.UpdateModelMixin,
+    mixins.ListModelMixin,
+    GenericViewSet
+):
     queryset = Ticket.objects.all().select_related()
 
     def get_serializer_class(self):
