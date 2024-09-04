@@ -18,4 +18,13 @@ admin.site.register(Route)
 admin.site.register(Flight)
 admin.site.register(Crew)
 admin.site.register(Ticket)
-admin.site.register(Order)
+
+
+class TicketLine(admin.TabularInline):
+    model = Ticket
+    extra = 1
+
+
+@admin.register(Order)
+class OrderAdmin(admin.ModelAdmin):
+    inlines = (TicketLine,)
