@@ -7,18 +7,24 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('airport', '0003_alter_ticket_unique_together'),
+        ("airport", "0003_alter_ticket_unique_together"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='airplane',
-            name='image',
-            field=models.ImageField(null=True, upload_to=airport.models.image_path),
+            model_name="airplane",
+            name="image",
+            field=models.ImageField(
+                null=True,
+                upload_to=airport.models.image_path
+            ),
         ),
         migrations.AddField(
-            model_name='airport',
-            name='image',
-            field=models.ImageField(null=True, upload_to=airport.models.image_path),
+            model_name="airport",
+            name="image",
+            field=models.ImageField(
+                null=True,
+                upload_to=airport.models.image_path
+            ),
         ),
     ]

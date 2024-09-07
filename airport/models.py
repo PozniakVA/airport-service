@@ -7,8 +7,12 @@ from django.utils.text import slugify
 
 from airport_service import settings
 
+
 def image_path(instance, filename):
-    filename = f"{slugify(instance.name)}-{uuid.uuid4()}" + pathlib.Path(filename).suffix
+    filename = (
+        f"{slugify(instance.name)}-{uuid.uuid4()}"
+        + pathlib.Path(filename).suffix
+    )
 
     path_at_media = "upload/"
     if isinstance(instance, Airplane):
@@ -18,22 +22,25 @@ def image_path(instance, filename):
 
     return pathlib.Path(path_at_media) / pathlib.Path(filename)
 
+
 class Airplane(models.Model):
     name = models.CharField(max_length=100)
     rows = models.IntegerField()
     seats_in_rows = models.IntegerField()
     airplane_type = models.ForeignKey(
-        "AirplaneType",
-        on_delete=models.CASCADE,
-        related_name="airplanes"
+        "AirplaneType", on_delete=models.CASCADE, related_name="airplanes"
     )
     image = models.ImageField(null=True, upload_to=image_path)
 
     def clean(self) -> None:
         if self.rows <= 0:
-            raise ValidationError("The number of rows must be greater than 0.")
+            raise ValidationError(
+                "The number of rows must be greater than 0."
+            )
         if self.seats_in_rows <= 0:
-            raise ValidationError("The number of seats in rows must be greater than 0.")
+            raise ValidationError(
+                "The number of seats in rows must be greater than 0."
+            )
 
     def save(self, *args, **kwargs) -> None:
         self.clean()
@@ -61,9 +68,7 @@ class Airport(models.Model):
 
 class Route(models.Model):
     source = models.ForeignKey(
-        "Airport",
-        on_delete=models.CASCADE,
-        related_name="routes_as_source"
+        "Airport", on_delete=models.CASCADE, related_name="routes_as_source"
     )
     destination = models.ForeignKey(
         "Airport",
@@ -95,16 +100,11 @@ class Flight(models.Model):
         related_name="flights"
     )
     airplane = models.ForeignKey(
-        "Airplane",
-        on_delete=models.CASCADE,
-        related_name="flights"
+        "Airplane", on_delete=models.CASCADE, related_name="flights"
     )
     departure_time = models.DateTimeField()
     arrival_time = models.DateTimeField()
-    crew = models.ManyToManyField(
-        "Crew",
-        related_name="flights"
-    )
+    crew = models.ManyToManyField("Crew", related_name="flights")
 
     def __str__(self) -> str:
         return f"{self.route} - {self.airplane}"
@@ -122,9 +122,7 @@ class Ticket(models.Model):
     row = models.IntegerField()
     seat = models.IntegerField()
     flight = models.ForeignKey(
-        "Flight",
-        on_delete=models.CASCADE,
-        related_name="tickets"
+        "Flight", on_delete=models.CASCADE, related_name="tickets"
     )
     order = models.ForeignKey(
         "Order",

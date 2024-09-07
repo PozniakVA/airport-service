@@ -1,4 +1,3 @@
-from django.contrib.auth import get_user_model
 from django.test import TestCase
 from rest_framework import status
 from rest_framework.reverse import reverse
@@ -26,5 +25,5 @@ class UnauthenticatedAPITests(TestCase):
             self.assertEqual(
                 response.status_code,
                 status.HTTP_401_UNAUTHORIZED,
-                f"{endpoint} must request authentication"
+                f"{endpoint} must request authentication",
             )

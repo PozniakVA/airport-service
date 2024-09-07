@@ -9,25 +9,36 @@ from airport.models import (
     Flight,
     Crew,
     Ticket,
-    Order
+    Order,
 )
 
 
 class AirplaneTypeSerializer(serializers.ModelSerializer):
     class Meta:
         model = AirplaneType
-        fields = ("id", "name",)
+        fields = (
+            "id",
+            "name",
+        )
 
 
 class AirplaneSerializer(serializers.ModelSerializer):
     class Meta:
         model = Airplane
-        fields = ("id", "name", "rows", "seats_in_rows", "airplane_type", "image")
+        fields = (
+            "id",
+            "name",
+            "rows",
+            "seats_in_rows",
+            "airplane_type",
+            "image",
+        )
 
 
 class AirplaneListSerializer(serializers.ModelSerializer):
     airplane_type = serializers.SlugRelatedField(
-        read_only=True, slug_field="name"
+        read_only=True,
+        slug_field="name"
     )
 
     class Meta:
@@ -54,7 +65,10 @@ class AirportSerializer(serializers.ModelSerializer):
 class AirportImageSerializer(serializers.ModelSerializer):
     class Meta:
         model = Airport
-        fields = ("id", "image",)
+        fields = (
+            "id",
+            "image",
+        )
 
 
 class RouteSerializer(serializers.ModelSerializer):
@@ -83,18 +97,30 @@ class RouteListSerializer(RouteSerializer):
 class RouteDetailSerializer(RouteListSerializer):
     source = AirportSerializer(read_only=True)
     destination = AirportSerializer(read_only=True)
+
+
 #
+
 
 class CrewSerializer(serializers.ModelSerializer):
     class Meta:
         model = Crew
-        fields = ("id", "first_name", "last_name",)
+        fields = (
+            "id",
+            "first_name",
+            "last_name",
+        )
 
 
 class TicketSerializer(serializers.ModelSerializer):
     class Meta:
         model = Ticket
-        fields = ("id", "row", "seat", "flight",)
+        fields = (
+            "id",
+            "row",
+            "seat",
+            "flight",
+        )
         unique_together = ("row", "seat")
 
     def validate(self, attrs) -> None:

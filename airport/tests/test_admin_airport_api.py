@@ -47,7 +47,6 @@ class AdminAirplaneApiTestCase(TestCase):
         }
         response = self.client.post(list_url("airplane"), payload)
 
-
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         airplane = Airplane.objects.get(id=response.data["id"])
 
@@ -172,7 +171,10 @@ class AdminRouteApiTestCase(TestCase):
 
         response = self.client.delete(list_url("route"), args=[route.id])
 
-        self.assertEqual(response.status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
+        self.assertEqual(
+            response.status_code,
+            status.HTTP_405_METHOD_NOT_ALLOWED
+        )
 
 
 class AdminFlightApiTestCase(TestCase):
@@ -218,7 +220,10 @@ class AdminFlightApiTestCase(TestCase):
 
         response = self.client.delete(list_url("flight"), args=[flight.id])
 
-        self.assertEqual(response.status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
+        self.assertEqual(
+            response.status_code,
+            status.HTTP_405_METHOD_NOT_ALLOWED
+        )
 
 
 class AdminTicketApiTestCase(TestCase):
@@ -237,7 +242,10 @@ class AdminTicketApiTestCase(TestCase):
 
         response = self.client.delete(list_url("ticket"), args=[ticket.id])
 
-        self.assertEqual(response.status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
+        self.assertEqual(
+            response.status_code,
+            status.HTTP_405_METHOD_NOT_ALLOWED
+        )
 
 
 class AdminOrderApiTestCase(TestCase):
@@ -254,13 +262,7 @@ class AdminOrderApiTestCase(TestCase):
     def test_create_order(self) -> None:
         flight = sample_flight()
         payload = {
-            "tickets": [
-                {
-                    "row": 4,
-                    "seat": 1,
-                    "flight": flight.id
-                }
-            ],
+            "tickets": [{"row": 4, "seat": 1, "flight": flight.id}],
         }
 
         response = self.client.post(list_url("order"), payload, format="json")
@@ -278,4 +280,7 @@ class AdminOrderApiTestCase(TestCase):
 
         response = self.client.delete(list_url("order"), args=[order.id])
 
-        self.assertEqual(response.status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
+        self.assertEqual(
+            response.status_code,
+            status.HTTP_405_METHOD_NOT_ALLOWED
+        )

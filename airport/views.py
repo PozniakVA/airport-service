@@ -19,7 +19,7 @@ from airport.models import (
     Route,
     Order,
     Flight,
-    Ticket
+    Ticket,
 )
 from airport.serialiser import (
     AirplaneSerializer,
@@ -91,6 +91,7 @@ class AirplaneViewSet(viewsets.ModelViewSet):
             serializer.save()
             return Response(serializer.data, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
     @extend_schema(
         parameters=[
             OpenApiParameter(
@@ -101,8 +102,9 @@ class AirplaneViewSet(viewsets.ModelViewSet):
             OpenApiParameter(
                 "airplane_type",
                 type=OpenApiTypes.INT,
-                description="Filter by airplane_type id (ex. ?airplane_type=2,3)",
-            )
+                description="Filter by airplane_type "
+                            "id (ex. ?airplane_type=2,3)",
+            ),
         ]
     )
     def list(self, request, *args, **kwargs):
@@ -164,7 +166,7 @@ class CrewViewSet(viewsets.ModelViewSet):
                 "last_name",
                 type=OpenApiTypes.STR,
                 description="Filter by last_name (ex. ?last_name=Ackerman)",
-            )
+            ),
         ]
     )
     def list(self, request, *args, **kwargs):
@@ -179,6 +181,7 @@ class AirportViewSet(viewsets.ModelViewSet):
         if self.action == "upload_image":
             return AirportImageSerializer
         return AirportSerializer
+
     def get_queryset(self):
         queryset = self.queryset
         name = self.request.query_params.get("name")
@@ -219,7 +222,7 @@ class RouteViewSet(
     mixins.RetrieveModelMixin,
     mixins.UpdateModelMixin,
     mixins.ListModelMixin,
-    GenericViewSet
+    GenericViewSet,
 ):
     queryset = Route.objects.select_related("source", "destination")
 
@@ -235,7 +238,9 @@ class RouteViewSet(
         destination = self.request.query_params.get("destination")
 
         if destination:
-            queryset = queryset.filter(destination__name__icontains=destination)
+            queryset = queryset.filter(
+                destination__name__icontains=destination
+            )
 
         return queryset.distinct().order_by("id")
 
@@ -258,7 +263,7 @@ class OrderViewSet(
     mixins.RetrieveModelMixin,
     mixins.UpdateModelMixin,
     mixins.ListModelMixin,
-    GenericViewSet
+    GenericViewSet,
 ):
     queryset = Order.objects.select_related(
         "user",
@@ -283,7 +288,7 @@ class OrderViewSet(
                 route_name=Concat(
                     F("tickets__flight__route__source__name"),
                     Value(" - "),
-                    F("tickets__flight__route__destination__name")
+                    F("tickets__flight__route__destination__name"),
                 )
             ).filter(route_name__icontains=route)
 
@@ -310,7 +315,7 @@ class OrderViewSet(
                 "route",
                 type=OpenApiTypes.STR,
                 description="Filter by route name",
-            )
+            ),
         ]
     )
     def list(self, request, *args, **kwargs):
@@ -323,7 +328,7 @@ class FlightViewSet(
     mixins.RetrieveModelMixin,
     mixins.UpdateModelMixin,
     mixins.ListModelMixin,
-    GenericViewSet
+    GenericViewSet,
 ):
     queryset = (
         Flight.objects.all()
@@ -331,10 +336,12 @@ class FlightViewSet(
         .prefetch_related("crew")
         .annotate(
             free_seats=(
-                    F("airplane__rows")
-                    * F("airplane__seats_in_rows")
-                    - Count("tickets")
-        )))
+                F("airplane__rows")
+                * F("airplane__seats_in_rows")
+                - Count("tickets")
+            )
+        )
+    )
 
     def get_serializer_class(self):
         if self.action == "list":
@@ -377,7 +384,7 @@ class TicketViewSet(
     mixins.RetrieveModelMixin,
     mixins.UpdateModelMixin,
     mixins.ListModelMixin,
-    GenericViewSet
+    GenericViewSet,
 ):
     queryset = Ticket.objects.all().select_related()
 

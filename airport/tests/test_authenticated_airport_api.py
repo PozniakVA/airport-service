@@ -67,7 +67,10 @@ class AuthenticatedAirplaneTypeAPITests(TestCase):
         airplane_type_1 = sample_airplane_type()
         airplane_type_2 = sample_airplane_type(name="Luxury")
 
-        response = self.client.get(list_url("airplane_type"), {"name": "Luxury"})
+        response = self.client.get(
+            list_url("airplane_type"),
+            {"name": "Luxury"}
+        )
 
         serializer_1 = AirplaneTypeSerializer(airplane_type_1)
         serializer_2 = AirplaneTypeSerializer(airplane_type_2)
@@ -117,7 +120,10 @@ class AuthenticatedAirplaneAPITests(TestCase):
         airplane_1 = sample_airplane()
         airplane_2 = sample_airplane(name="Airbus A320")
 
-        response = self.client.get(list_url("airplane"), {"name": "Airbus A320"})
+        response = self.client.get(
+            list_url("airplane"),
+            {"name": "Airbus A320"}
+        )
 
         serializer_1 = AirplaneListSerializer(airplane_1)
         serializer_2 = AirplaneListSerializer(airplane_2)
@@ -132,7 +138,9 @@ class AuthenticatedAirplaneAPITests(TestCase):
         airplane_type = sample_airplane_type(name="Luxury")
         airplane_2 = sample_airplane(airplane_type=airplane_type)
 
-        response = self.client.get(list_url("airplane"), {"airplane_type": airplane_type.id})
+        response = self.client.get(
+            list_url("airplane"), {"airplane_type": airplane_type.id}
+        )
 
         serializer_1 = AirplaneListSerializer(airplane_1)
         serializer_2 = AirplaneListSerializer(airplane_2)
@@ -235,7 +243,10 @@ class AuthenticatedAirportAPITests(TestCase):
         airport_1 = sample_airport()
         airport_2 = sample_airport(name="London Internation")
 
-        response = self.client.get(list_url("airport"), {"name": "London Internation"})
+        response = self.client.get(
+            list_url("airport"),
+            {"name": "London Internation"}
+        )
 
         serializer_1 = AirportSerializer(airport_1)
         serializer_2 = AirportSerializer(airport_2)
@@ -292,8 +303,7 @@ class AuthenticatedRouteAPITests(TestCase):
         route_2 = sample_route(destination=airport)
 
         response = self.client.get(
-            list_url("route"),
-            {"destination": "London Internation"}
+            list_url("route"), {"destination": "London Internation"}
         )
 
         serializer_1 = RouteListSerializer(route_1)
@@ -358,7 +368,9 @@ class AuthenticatedFlightAPITests(TestCase):
         route = sample_route(source=airport)
         flight_2 = sample_flight(route=route)
 
-        response = self.client.get(list_url("flight"), {"route": "Paris - Tokyo Airport"})
+        response = self.client.get(
+            list_url("flight"), {"route": "Paris - Tokyo Airport"}
+        )
 
         serializer_1 = FlightListSerializer(flight_1)
         serializer_1_expected = add_free_seats(serializer_1.data, flight_1)
@@ -376,7 +388,7 @@ class AuthenticatedFlightAPITests(TestCase):
             "airport": sample_airport(),
             "departure_time": "2024-09-30T00:00:00Z",
             "arrival_time": "2024-09-01T00:00:00Z",
-            "crew": sample_crew()
+            "crew": sample_crew(),
         }
 
         response = self.client.post(list_url("flight"), payload)
@@ -416,10 +428,12 @@ class AuthenticatedOrderAPITests(TestCase):
     def test_filter_order_by_created_at(self) -> None:
         order_1 = sample_order(user=self.user)
 
-        response = self.client.get(list_url("order"), {"created_at": "2010-10-10"})
+        response = self.client.get(
+            list_url("order"),
+            {"created_at": "2010-10-10"}
+        )
 
         serializer_1 = OrderListSerializer(order_1)
-
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertNotIn(serializer_1.data, response.data["results"])
@@ -433,10 +447,11 @@ class AuthenticatedOrderAPITests(TestCase):
         airport = sample_airport(name="Paris", closest_big_city="Paris")
         route = sample_route(source=airport)
         flight = sample_flight(route=route)
-        sample_ticket(row=2, seat=2, flight=flight , order=order_2)
+        sample_ticket(row=2, seat=2, flight=flight, order=order_2)
 
-
-        response = self.client.get(list_url("order"), {"route": "Paris - Tokyo Airport"})
+        response = self.client.get(
+            list_url("order"), {"route": "Paris - Tokyo Airport"}
+        )
 
         serializer_1 = OrderListSerializer(order_1)
         serializer_2 = OrderListSerializer(order_2)
@@ -503,7 +518,9 @@ class AuthenticatedTicketAPITests(TestCase):
         serializer_1 = TicketListSerializer(ticket_1)
         serializer_2 = TicketListSerializer(ticket_2)
 
-        response = self.client.get(list_url("ticket"), {"route": "Berlin - Tokyo Airport"})
+        response = self.client.get(
+            list_url("ticket"), {"route": "Berlin - Tokyo Airport"}
+        )
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertNotIn(serializer_1.data, response.data)
@@ -517,6 +534,8 @@ class AuthenticatedTicketAPITests(TestCase):
             "flight": flight.id,
         }
 
-        response = self.client.post(list_url("ticket"), {"ticket": payload}, format="json")
+        response = self.client.post(
+            list_url("ticket"), {"ticket": payload}, format="json"
+        )
 
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)

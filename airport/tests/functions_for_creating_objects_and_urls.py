@@ -12,26 +12,29 @@ from airport.models import (
     Ticket,
 )
 
+
 def list_url(model: str):
     return reverse(f"airport:{model}-list")
+
 
 def detail_url(model: str, id: int):
     return reverse(f"airport:{model}-detail", args=[id])
 
+
 def add_free_seats(serializer, flight):
-        serializer["free_seats"] = (
-                flight.airplane.rows
-                * flight.airplane.seats_in_rows
-                - flight.tickets.count()
-        )
-        return serializer
+    serializer["free_seats"] = (
+        flight.airplane.rows
+        * flight.airplane.seats_in_rows
+        - flight.tickets.count()
+    )
+    return serializer
+
 
 def sample_airplane_type(**params):
-    defaults = {
-        "name": "Regional"
-    }
+    defaults = {"name": "Regional"}
     defaults.update(params)
     return AirplaneType.objects.create(**defaults)
+
 
 def sample_airplane(**params):
     defaults = {
@@ -39,10 +42,11 @@ def sample_airplane(**params):
         "rows": 10,
         "seats_in_rows": 6,
         "airplane_type": sample_airplane_type(),
-        "image": None
+        "image": None,
     }
     defaults.update(params)
     return Airplane.objects.create(**defaults)
+
 
 def sample_crew(**params):
     defaults = {
@@ -52,6 +56,7 @@ def sample_crew(**params):
     defaults.update(params)
     return Crew.objects.create(**defaults)
 
+
 def sample_airport(**params):
     defaults = {
         "name": "Test Airport",
@@ -60,17 +65,19 @@ def sample_airport(**params):
     defaults.update(params)
     return Airport.objects.create(**defaults)
 
+
 def sample_route(**params):
     defaults = {
         "source": sample_airport(),
         "destination": sample_airport(
-                name="Tokyo Airport",
+            name="Tokyo Airport",
             closest_big_city="Tokyo",
         ),
-        "distance": 5000
+        "distance": 5000,
     }
     defaults.update(params)
     return Route.objects.create(**defaults)
+
 
 def sample_flight(**params):
     sample_airplane()
@@ -87,6 +94,7 @@ def sample_flight(**params):
 
     return flight
 
+
 def sample_order(**params):
     user, created = get_user_model().objects.get_or_create(
         email="user12@gmail.com",
@@ -98,6 +106,7 @@ def sample_order(**params):
     }
     defaults.update(params)
     return Order.objects.create(**defaults)
+
 
 def sample_ticket(**params):
     defaults = {
