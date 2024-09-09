@@ -21,7 +21,7 @@ in the system.
 - It is forbidden to delete in endpoints: *route, order, flight, ticket*
 
 # DB Structure
-![DB Structure](media/photo_for_readme_md/DB_structure.png)
+![DB Structure](images/images_for_readme_md/DB_Structure.png)
 
 # Installing
 - Install PostgresSQL and create db 
