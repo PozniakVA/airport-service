@@ -1,13 +1,9 @@
-__pycache__/
-*.pyc
-*.pyo
-*.pyd
-*.log
+**__pycache__/
 
 # Virtual environment directories
 venv/
 env/
-*.env
+.env
 
 # Git files
 .git/
@@ -21,21 +17,5 @@ docker-compose.yml
 .DS_Store
 Thumbs.db
 
-# Python packaging files
-*.egg
-*.egg-info/
-dist/
-build/
-.eggs/
-
 # Media uploads (if any)
 media/
-
-# Static files (if collected during build)
-static/
-
-# Secrets and environment variables
-.env
-*.env
-secrets/
-config/settings/*.env
