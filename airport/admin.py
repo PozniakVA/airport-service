@@ -11,19 +11,37 @@ from airport.models import (
     Order,
 )
 
-admin.site.register(Airplane)
-admin.site.register(AirplaneType)
-admin.site.register(Airport)
-admin.site.register(Route)
-admin.site.register(Flight)
-admin.site.register(Crew)
-admin.site.register(Ticket)
+@admin.register(Airplane)
+class AirplaneAdmin(admin.ModelAdmin):
+    list_display = ("name", "airplane_type")
 
+@admin.register(AirplaneType)
+class AirplaneTypeAdmin(admin.ModelAdmin):
+    pass
+
+@admin.register(Airport)
+class AirportAdmin(admin.ModelAdmin):
+    pass
+
+@admin.register(Route)
+class RouteAdmin(admin.ModelAdmin):
+    pass
+
+@admin.register(Flight)
+class FlightAdmin(admin.ModelAdmin):
+    pass
+
+@admin.register(Crew)
+class CrewAdmin(admin.ModelAdmin):
+    pass
+
+@admin.register(Ticket)
+class TicketAdmin(admin.ModelAdmin):
+    pass
 
 class TicketLine(admin.TabularInline):
     model = Ticket
     extra = 1
-
 
 @admin.register(Order)
 class OrderAdmin(admin.ModelAdmin):
